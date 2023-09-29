@@ -7,14 +7,16 @@
 
 int main() {
 
-    std::string line = "var asd = 10;";
-    std::cout << line << std::endl;
+    std::string line = "var asd = 10 + 10 * ((5+4) - 4);\n 10 + 0;\n asd + 5 + 2;";
+
     //std::getline(std::cin, line);
     while (line != "exit"){
+        std::cout << "Running: \n" << line << std::endl;
+
         Lexer l(line);
         auto tokens = l.parse();
-        Parser p(tokens);
-        auto ast = p.parseStatement();
+        Parser p(tokens, "REPL.cl");
+        auto ast = p.parseStatementList();
         to_string(std::cout, ast);
 
         Interpreter v{};

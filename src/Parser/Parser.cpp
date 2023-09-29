@@ -4,29 +4,42 @@
 
 #include "Parser.h"
 
-std::shared_ptr<SyntaxNode> Parser::parseStatement() {
-    std::shared_ptr<SyntaxNode> node;
+std::shared_ptr<StatementList> Parser::parseStatementList(){
+    std::vector<std::shared_ptr<Statement>> statements;
+    while (!this->Check(TokenKinds::EOI)){
+        statements.push_back(this->parseStatement());
+    }
+
+    return std::make_shared<StatementList>(statements);
+}
+
+std::shared_ptr<Statement> Parser::parseStatement() {
+    std::shared_ptr<Statement> node;
     auto n = Peak();
     if(n.kind == TokenKinds::KW_VAR){
         node = parseVariableDeclaration();
     } else{
-        node = parseExp(0);
+        node = parseExpressionStatement();
     }
-    Expect(TokenKinds::SEMI_COLON);
+    Consume(TokenKinds::SEMI_COLON);
     return node;
 }
 
-std::shared_ptr<SyntaxNode> Parser::parseVariableDeclaration(){
+std::shared_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
+    return std::make_shared<ExpressionStatement>(parseExp());
+}
+
+std::shared_ptr<VariableDeclarationStatement> Parser::parseVariableDeclaration(){
     auto kw = Consume(TokenKinds::KW_VAR);
     auto name = Consume(TokenKinds::IDENTIFIER);
     if(Peak().kind == TokenKinds::ASSIGNMENT){
         auto eq = Consume(TokenKinds::ASSIGNMENT);
         auto express = parseExp(0);
 
-        return std::make_shared<VariableDeclarationNode>(kw, name, eq, express);
+        return std::make_shared<VariableDeclarationStatement>(kw, name, eq, express);
     }
 
-    return std::make_shared<VariableDeclarationNode>(kw, name);
+    return std::make_shared<VariableDeclarationStatement>(kw, name);
 }
 
 
@@ -74,7 +87,7 @@ bool isBinaryOperator(TokenKind op){
     return false;
 }
 
-std::shared_ptr<SyntaxNode> Parser::parseExp(int precedence) {
+std::shared_ptr<Expression> Parser::parseExp(int precedence) {
     auto t = parseParam();
     while (isBinaryOperator(Peak().kind) && prec(Peak().kind) >= precedence){
         auto op = Peak();
@@ -89,7 +102,7 @@ std::shared_ptr<SyntaxNode> Parser::parseExp(int precedence) {
     return t;
 }
 
-std::shared_ptr<SyntaxNode> Parser::parseParam(){
+std::shared_ptr<Expression> Parser::parseParam(){
     // if next is a unary operator
     if(Peak().kind == TokenKinds::SUBTRACT){
         auto op = Consume(TokenKinds::SUBTRACT);
@@ -105,5 +118,9 @@ std::shared_ptr<SyntaxNode> Parser::parseParam(){
     else if (Peak().kind == TokenKinds::NUMBER_LITERAL){
         auto val = Consume(TokenKinds::NUMBER_LITERAL);
         return std::make_shared<NumberExpressionSyntax>(val);
+    }
+    else if (Peak().kind == TokenKinds::IDENTIFIER){
+        auto val = Consume(TokenKinds::IDENTIFIER);
+        return std::make_shared<VariableExpression>(val);
     }
 }

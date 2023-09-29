@@ -5,11 +5,11 @@
 #include <iostream>
 #include "Visitor.h"
 
-void ConstantNumberVisitor::VisitNode(std::shared_ptr<NumberExpressionSyntax> node, Interpreter &i, Context &c) {
+void ExpressionVisitors::VisitConstantNumber(std::shared_ptr<NumberExpressionSyntax> node, Interpreter &i, Context &c) {
     c.result = std::stoi(node->numberToken.value);
 }
 
-void BinaryOperatorVisitor::VisitNode(std::shared_ptr<BinaryOperator> node, Interpreter &i, Context &c) {
+void ExpressionVisitors::VisitBinaryOperator(std::shared_ptr<BinaryOperator> node, Interpreter &i, Context &c) {
     i.Visit(node->param1, c);
     auto val_a = c.result;
     i.Visit(node->param2, c);
@@ -26,6 +26,31 @@ void BinaryOperatorVisitor::VisitNode(std::shared_ptr<BinaryOperator> node, Inte
     }
 }
 
-void ParenthesisNodeVisitor::VisitNode(std::shared_ptr<ParenthesisNode> node, Interpreter &i, Context &c) {
+void ExpressionVisitors::VisitParenthesisNode(std::shared_ptr<ParenthesisNode> node, Interpreter &i, Context &c){
     i.Visit(node->inside, c);
+}
+
+void
+ExpressionVisitors::VisitVariableExpressionNode(std::shared_ptr<VariableExpression> node, Interpreter &i, Context &c) {
+    c.result = c.scope[node->identifier.value];
+}
+
+void StatementVisitors::VisitStatementList(std::shared_ptr<StatementList> node, Interpreter &i, Context &c) {
+    for (auto &statement: node->statements) {
+        i.Visit(statement, c);
+    }
+}
+
+void StatementVisitors::VisitVariableDeclarationStatement(std::shared_ptr<VariableDeclarationStatement> node, Interpreter &i,
+                                                    Context &c) {
+    c.scope[node->name.value] = 0;
+    if(node->init.has_value()){
+        i.Visit(node->init.value(), c);
+        c.scope[node->name.value] = c.result;
+    }
+}
+
+void StatementVisitors::VisitExpressionStatement(std::shared_ptr<ExpressionStatement> node, Interpreter &i,
+                                                 Context &c) {
+    i.Visit(node->expression,c);
 }

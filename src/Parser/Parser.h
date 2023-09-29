@@ -13,12 +13,14 @@ class Parser {
 public:
     Parser(std::vector<Token> t, std::string file_name): tokens(t) {}
 
-    std::shared_ptr<SyntaxNode> parseStatement();
+    std::shared_ptr<StatementList> parseStatementList();
+    std::shared_ptr<Statement> parseStatement();
 
-    std::shared_ptr<SyntaxNode> parseVariableDeclaration();
+    std::shared_ptr<VariableDeclarationStatement> parseVariableDeclaration();
+    std::shared_ptr<ExpressionStatement> parseExpressionStatement();
 
-    std::shared_ptr<SyntaxNode> parseExp(int precedence = 0);
-    std::shared_ptr<SyntaxNode> parseParam();
+    std::shared_ptr<Expression> parseExp(int precedence = 0);
+    std::shared_ptr<Expression> parseParam();
 
     Token Consume(TokenKind kind) {
         if(Check(kind)){

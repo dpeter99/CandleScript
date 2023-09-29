@@ -1,6 +1,6 @@
 #include "SyntaxNode.h"
 
-void to_string(std::ostream &os, std::shared_ptr<SyntaxNode> &node, std::string indent, bool isLast) {
+void to_string(std::ostream &os, const std::shared_ptr<SyntaxNode> &node, std::string indent, bool isLast) {
 
     auto marker = isLast ? "└──" : "├──";
     os << indent;
@@ -46,10 +46,16 @@ std::vector<std::shared_ptr<SyntaxNode>> ParenthesisNode::GetChildren() {
     };
 }
 
-std::vector<std::shared_ptr<SyntaxNode>> VariableDeclarationNode::GetChildren() {
+std::vector<std::shared_ptr<SyntaxNode>> VariableDeclarationStatement::GetChildren() {
     return init.has_value() ?
     std::vector<std::shared_ptr<SyntaxNode>>{
         init.value(),
     } :
     std::vector<std::shared_ptr<SyntaxNode>>{};
+}
+
+std::vector<std::shared_ptr<SyntaxNode>> ExpressionStatement::GetChildren() {
+    return {
+        expression
+    };
 }

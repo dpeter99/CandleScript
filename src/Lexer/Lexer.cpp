@@ -9,7 +9,7 @@ std::vector<Token> Lexer::parse() {
 
     while(idx < buffer.size()){
         auto t  = parseToken();
-        if(t.kind != TokenKinds::SPACE)
+        if(t.kind != TokenKinds::SPACE && t.kind != TokenKinds::NEW_LINE)
             tokens.push_back(t);
 
         advance();
