@@ -1,0 +1,57 @@
+#ifndef TOKEN
+# define TOKEN(name, token)
+#endif
+
+TOKEN(UNKNOWN,"?")
+TOKEN(ERROR, "!")
+
+TOKEN(SPACE," ")
+TOKEN(NEW_LINE, "\n")
+TOKEN(EOI, "END_OF_INPUT")
+
+TOKEN(COLON,":")
+TOKEN(SEMI_COLON,";")
+TOKEN(COMMA,",")
+
+TOKEN(PAREN_L,"(")
+TOKEN(PAREN_R,")")
+
+TOKEN(BRACE_L,"{")
+TOKEN(BRACE_R,"}")
+
+TOKEN(ASSIGNMENT, "=")
+
+TOKEN(INCREMENT , "++")
+TOKEN(DECREMENT  , "--")
+
+TOKEN(ADD      , "+" )
+TOKEN(SUBTRACT , "-" )
+TOKEN(DIVIDE   , "/" )
+TOKEN(MODULO   , "%" )
+TOKEN(MULTIPLY , "*" )
+
+TOKEN(LESS_THAN       , "<" )
+TOKEN(LESS_THAN_EQ    , "<=")
+TOKEN(GREATER_THAN    , ">" )
+TOKEN(GREATER_THAN_EQ , ">=")
+TOKEN(NOT_EQ          , "!=")
+TOKEN(EQUAL           , "==")
+
+TOKEN(NOT, "!" )
+TOKEN(OR , "||")
+TOKEN(AND, "&&")
+
+TOKEN(BIT_NOT    , "~" )
+TOKEN(BIT_AND    , "&" )
+TOKEN(BIT_OR     , "|" )
+TOKEN(SHIFT_LEFT , "<<")
+TOKEN(SHIFT_RIGHT, ">>")
+TOKEN(CARROT     , "^" )
+
+TOKEN(KW_FUN,"fun")
+TOKEN(KW_VAR,"var")
+
+TOKEN(STRING_LITERAL,"STRING_LITERAL")
+TOKEN(NUMBER_LITERAL,"NUMBER_LITERAL")
+
+TOKEN(IDENTIFIER,"IDENTIFIER")
