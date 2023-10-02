@@ -59,3 +59,10 @@ std::vector<std::shared_ptr<SyntaxNode>> ExpressionStatement::GetChildren() {
         expression
     };
 }
+
+std::vector<std::shared_ptr<SyntaxNode>> AssignmentExpression::GetChildren() {
+    return {
+        param1,
+        param2
+    };
+}

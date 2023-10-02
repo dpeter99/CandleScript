@@ -5,11 +5,13 @@
 
 class Lexer {
 
+    std::string filename;
     std::string buffer;
     size_t idx = 0;
     Pos pos;
+
 public:
-    Lexer(std::string data): buffer(data){}
+    Lexer(std::string data, std::string file_name): buffer(data), filename(file_name), pos(file_name,1,1){}
 
     /**
      * Parse the whole buffer

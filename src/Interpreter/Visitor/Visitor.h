@@ -41,6 +41,8 @@ public:
     static void VisitParenthesisNode(std::shared_ptr<ParenthesisNode> node, Interpreter &i, Context &c);
 
     static void VisitVariableExpressionNode(std::shared_ptr<VariableExpression> node, Interpreter &i, Context &c);
+
+    static void VisitAssignmentExpressionNode(std::shared_ptr<AssignmentExpression> node, Interpreter &i, Context &c);
 };
 
 
@@ -84,6 +86,7 @@ class Interpreter {
             makeVisitor<BinaryOperator>(ExpressionVisitors::VisitBinaryOperator),
             makeVisitor<ParenthesisNode>(ExpressionVisitors::VisitParenthesisNode),
             makeVisitor<VariableExpression>(ExpressionVisitors::VisitVariableExpressionNode),
+            makeVisitor<AssignmentExpression>(ExpressionVisitors::VisitAssignmentExpressionNode),
     };
 public:
     void Visit(std::shared_ptr<SyntaxNode> node, Context &context){

@@ -13,6 +13,13 @@ std::shared_ptr<StatementList> Parser::parseStatementList(){
     return std::make_shared<StatementList>(statements);
 }
 
+/*
+std::shared_ptr<SyntaxNode> Parser::parseDeclaration(){
+
+}
+*/
+
+
 std::shared_ptr<Statement> Parser::parseStatement() {
     std::shared_ptr<Statement> node;
     auto n = Peak();
@@ -26,7 +33,7 @@ std::shared_ptr<Statement> Parser::parseStatement() {
 }
 
 std::shared_ptr<ExpressionStatement> Parser::parseExpressionStatement(){
-    return std::make_shared<ExpressionStatement>(parseExp());
+    return std::make_shared<ExpressionStatement>(parseExpression());
 }
 
 std::shared_ptr<VariableDeclarationStatement> Parser::parseVariableDeclaration(){
@@ -34,7 +41,7 @@ std::shared_ptr<VariableDeclarationStatement> Parser::parseVariableDeclaration()
     auto name = Consume(TokenKinds::IDENTIFIER);
     if(Peak().kind == TokenKinds::ASSIGNMENT){
         auto eq = Consume(TokenKinds::ASSIGNMENT);
-        auto express = parseExp(0);
+        auto express = parseExpression(0);
 
         return std::make_shared<VariableDeclarationStatement>(kw, name, eq, express);
     }
@@ -52,6 +59,8 @@ int prec(TokenKind op){
         return 5;
     if(op == TokenKinds::DIVIDE)
         return 5;
+    if(op == TokenKinds::ASSIGNMENT)
+        return 6;
 
     return 10;
 }
@@ -70,6 +79,8 @@ Associative associativity(TokenKind op){
         return Associative::Left;
     if(op == TokenKinds::DIVIDE)
         return Associative::Left;
+    if(op == TokenKinds::ASSIGNMENT)
+        return Associative::Left;
 
     return Associative::Right;
 }
@@ -83,11 +94,13 @@ bool isBinaryOperator(TokenKind op){
         return true;
     if(op == TokenKinds::DIVIDE)
         return true;
+    if(op == TokenKinds::ASSIGNMENT)
+        return true;
 
     return false;
 }
 
-std::shared_ptr<Expression> Parser::parseExp(int precedence) {
+std::shared_ptr<Expression> Parser::parseExpression(int precedence) {
     auto t = parseParam();
     while (isBinaryOperator(Peak().kind) && prec(Peak().kind) >= precedence){
         auto op = Peak();
@@ -96,8 +109,17 @@ std::shared_ptr<Expression> Parser::parseExp(int precedence) {
         auto q = associativity(op.kind) == Associative::Right ?
                  prec(op.kind) :
                  1 + prec(op.kind);
-        auto t1 = parseExp(q);
-        t = std::make_shared<BinaryOperator>(t,op,t1);
+        auto t1 = parseExpression(q);
+
+        if(op.kind == TokenKinds::ASSIGNMENT){
+            if(t->Kind() == VariableExpression::KIND){
+                t = std::make_shared<AssignmentExpression>(std::static_pointer_cast<VariableExpression>(t),op,t1);
+            }
+            else
+                throw std::runtime_error("["+op.position.to_string()+"] Left hand side can't be assigned to");
+        }
+        else
+            t = std::make_shared<BinaryOperator>(t,op,t1);
     }
     return t;
 }
@@ -107,11 +129,11 @@ std::shared_ptr<Expression> Parser::parseParam(){
     if(Peak().kind == TokenKinds::SUBTRACT){
         auto op = Consume(TokenKinds::SUBTRACT);
         auto q = prec(op.kind);
-        auto t = parseExp(q);
+        auto t = parseExpression(q);
         return std::make_shared<UnaryOperator>(op, t);
     } else if (Peak().kind == TokenKinds::PAREN_L){
         auto o = Consume(TokenKinds::PAREN_L);
-        auto i = parseExp(0);
+        auto i = parseExpression(0);
         auto c = Consume(TokenKinds::PAREN_R);
         return std::make_shared<ParenthesisNode>(o,i,c);
     }

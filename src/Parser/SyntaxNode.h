@@ -36,6 +36,19 @@ public:
     virtual std::string GetValue() override {return numberToken.value; }
 };
 
+class VariableExpression: public Expression{
+public:
+    NodeKind(VariableExpression);
+
+    Token identifier;
+
+    VariableExpression(Token name): identifier(name) {};
+
+    std::string GetValue() override {
+        return identifier.value;
+    }
+};
+
 class UnaryOperator : public Expression{
 public:
     NodeKind(UnaryOperator)
@@ -63,6 +76,21 @@ public:
     std::string GetValue() override { return op.value; }
 };
 
+class AssignmentExpression: public Expression{
+public:
+    NodeKind(AssignmentExpression)
+
+    std::shared_ptr<Expression> param1;
+    Token assign;
+    std::shared_ptr<Expression> param2;
+
+    AssignmentExpression(const std::shared_ptr<VariableExpression> &p1, Token &op, std::shared_ptr<Expression> &p2): param1(p1), assign(op), param2(p2){}
+
+    std::vector<std::shared_ptr<SyntaxNode>> GetChildren() override;
+
+    std::string GetValue() override { return assign.value; }
+};
+
 class ParenthesisNode : public Expression{
 public:
     NodeKind(ParenthesisNode)
@@ -74,19 +102,6 @@ public:
     ParenthesisNode(Token o, std::shared_ptr<Expression> i, Token c): open(o), inside(i), close(c) {}
 
     std::vector<std::shared_ptr<SyntaxNode>> GetChildren() override;
-};
-
-class VariableExpression: public Expression{
-public:
-    NodeKind(VariableExpression);
-
-    Token identifier;
-
-    VariableExpression(Token name): identifier(name) {};
-
-    std::string GetValue() override {
-        return identifier.value;
-    }
 };
 
 

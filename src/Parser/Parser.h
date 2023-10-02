@@ -10,8 +10,20 @@ class Parser {
 
     std::vector<Token> tokens;
     size_t idx = 0;
+
+    std::string filename;
 public:
-    Parser(std::vector<Token> t, std::string file_name): tokens(t) {}
+    Parser(std::vector<Token> t, const std::string &file_name): tokens(t), filename(file_name){}
+
+    std::optional<std::shared_ptr<StatementList>> parseProgram() {
+
+        try{
+            return parseStatementList();
+        } catch (const std::runtime_error& e) {
+            std::printf(e.what());
+        }
+        return {};
+    }
 
     std::shared_ptr<StatementList> parseStatementList();
     std::shared_ptr<Statement> parseStatement();
@@ -19,20 +31,20 @@ public:
     std::shared_ptr<VariableDeclarationStatement> parseVariableDeclaration();
     std::shared_ptr<ExpressionStatement> parseExpressionStatement();
 
-    std::shared_ptr<Expression> parseExp(int precedence = 0);
+    std::shared_ptr<Expression> parseExpression(int precedence = 0);
     std::shared_ptr<Expression> parseParam();
 
     Token Consume(TokenKind kind) {
-        if(Check(kind)){
-            auto t = Peak();
-            Advance();
-            return t;
-        }
+        Expect(kind);
+        auto t = Peak();
+        Advance();
+        return t;
+
     }
 
     void Expect(TokenKind kind){
         if(!Check(kind))
-            throw std::runtime_error("Expected token: " + kind.token);
+            throw std::runtime_error("[" + Peak().position.to_string() + "] Expected token: " + kind.token + " but got: " + Peak().value ) ;
     }
 
     bool Check(TokenKind kind) {

@@ -35,6 +35,17 @@ ExpressionVisitors::VisitVariableExpressionNode(std::shared_ptr<VariableExpressi
     c.result = c.scope[node->identifier.value];
 }
 
+void ExpressionVisitors::VisitAssignmentExpressionNode(std::shared_ptr<AssignmentExpression> node, Interpreter &i,
+                                                       Context &c) {
+    if(c.scope.contains(node->param1->GetValue())){
+        i.Visit(node->param2,c);
+        c.scope[node->param1->GetValue()] = c.result;
+    }
+    else {
+        throw std::runtime_error("Unknown variable: " + node->param1->GetValue() );
+    }
+}
+
 void StatementVisitors::VisitStatementList(std::shared_ptr<StatementList> node, Interpreter &i, Context &c) {
     for (auto &statement: node->statements) {
         i.Visit(statement, c);

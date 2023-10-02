@@ -31,15 +31,20 @@ public:
 
 
 struct Pos{
+    std::string filename;
     size_t column = 1;
     size_t line = 1;
 
     Pos() = default;
-    Pos(size_t c, size_t l): column(c), line(l){}
+    Pos(std::string file_name,size_t c, size_t l): filename(std::move(file_name)), column(c), line(l){}
 
     void NewLine(){
         column = 0;
         line++;
+    }
+
+    std::string to_string() const{
+        return filename + ":" + std::to_string(line) + ":" + std::to_string(column);
     }
 };
 

@@ -7,24 +7,29 @@
 
 int main() {
 
-    std::string line = "var asd = 10 + 10 * ((5+4) - 4);\n 10 + 0;\n asd + 5 + 2;";
+    std::string line = "var asd = 10 + 10 * ((5+4) - 4);\n 10 + 0;\n asd + 5 + 2; \n asd = asd + 12;";
 
     //std::getline(std::cin, line);
     while (line != "exit"){
+
         std::cout << "Running: \n" << line << std::endl;
 
-        Lexer l(line);
+        Lexer l(line, "REPL.input");
         auto tokens = l.parse();
         Parser p(tokens, "REPL.cl");
-        auto ast = p.parseStatementList();
-        to_string(std::cout, ast);
+        auto ast = p.parseProgram();
 
-        Interpreter v{};
-        Context c{};
-        v.Visit(ast,c);
+        if(ast.has_value()) {
 
-        std::cout << "Res: " << c.result;
+            to_string(std::cout, ast.value());
 
+            Interpreter v{};
+            Context c{};
+            v.Visit(ast.value(), c);
+
+            std::cout << "Res: " << c.result;
+
+        }
         std::getline(std::cin, line);
     }
 
