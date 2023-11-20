@@ -7,7 +7,14 @@
 
 int main() {
 
-    std::string line = "var asd = 10 + 10 * ((5+4) - 4);\n 10 + 0;\n asd + 5 + 2; \n asd = asd + 12;";
+    std::string line =
+            "var asd = 10 + 10 * ((5+4) - 4);\n"
+            "10 + 0;\n"
+            "asd + 5 + 2; \n"
+            "asd = asd + 12;\n"
+            "{\n"
+            "  var a = asd + 2;\n"
+            "}";
 
     //std::getline(std::cin, line);
     while (line != "exit"){

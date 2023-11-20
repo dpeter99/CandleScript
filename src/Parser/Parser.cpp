@@ -3,6 +3,7 @@
 //
 
 #include "Parser.h"
+#include "ParserError.h"
 
 std::shared_ptr<StatementList> Parser::parseStatementList(){
     std::vector<std::shared_ptr<Statement>> statements;
@@ -145,4 +146,6 @@ std::shared_ptr<Expression> Parser::parseParam(){
         auto val = Consume(TokenKinds::IDENTIFIER);
         return std::make_shared<VariableExpression>(val);
     }
+
+    throw ParserException( Peak(), "Unexpected token: " + Peak().kind.value);
 }
